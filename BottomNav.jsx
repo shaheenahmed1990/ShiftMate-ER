@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
   Clock3,
@@ -28,7 +28,7 @@ const moreItems = [
   { path: '/settings', label: 'Settings', icon: Settings },
 ]
 
-function NavItem({ item, ui, lang, onClick }) {
+function NavItem({ item, ui, lang, dark, onClick }) {
   const Icon = item.icon
 
   return (
@@ -39,7 +39,9 @@ function NavItem({ item, ui, lang, onClick }) {
       className={({ isActive }) =>
         `flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm transition md:justify-start ${
           isActive
-            ? 'bg-white/10 font-medium'
+            ? dark
+              ? 'bg-white/10 text-white font-medium'
+              : 'bg-slate-200 text-slate-900 font-medium'
             : `${ui.sub} hover:bg-white/5`
         }`
       }
@@ -51,11 +53,12 @@ function NavItem({ item, ui, lang, onClick }) {
 }
 
 export default function BottomNav() {
-  const { ui, lang } = useApp()
+  const { ui, lang, dark } = useApp()
   const [moreOpen, setMoreOpen] = useState(false)
+  const location = useLocation()
 
   const isMoreActive = moreItems.some(
-    (item) => window.location.hash === `#${item.path}`,
+    (item) => location.pathname === item.path,
   )
 
   return (
@@ -70,6 +73,7 @@ export default function BottomNav() {
               item={item}
               ui={ui}
               lang={lang}
+              dark={dark}
             />
           ))}
 
@@ -78,7 +82,9 @@ export default function BottomNav() {
             onClick={() => setMoreOpen((value) => !value)}
             className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm transition md:flex-none md:justify-start ${
               isMoreActive || moreOpen
-                ? 'bg-white/10 font-medium'
+                ? dark
+                  ? 'bg-white/10 text-white font-medium'
+                  : 'bg-slate-200 text-slate-900 font-medium'
                 : `${ui.sub} hover:bg-white/5`
             }`}
           >
@@ -97,6 +103,7 @@ export default function BottomNav() {
                 item={item}
                 ui={ui}
                 lang={lang}
+                dark={dark}
                 onClick={() => setMoreOpen(false)}
               />
             ))}

@@ -1,3 +1,4 @@
+cat > src/pages/Settings.jsx <<'EOF'
 import React from 'react'
 import { Globe2, Moon, Sun, Database } from 'lucide-react'
 import { useApp } from '../hooks/useApp'
@@ -31,6 +32,7 @@ export default function Settings() {
         </header>
 
         <div className="space-y-6">
+
           {/* Language */}
           <section className={`rounded-2xl p-6 ${ui.card}`}>
             <div className="mb-5">
@@ -59,7 +61,9 @@ export default function Settings() {
 
                 <div>
                   <div className="font-medium">العربية</div>
-                  <div className={`text-xs ${ui.sub}`}>Arabic</div>
+                  <div className={`text-xs ${ui.sub}`}>
+                    Arabic
+                  </div>
                 </div>
               </button>
 
@@ -76,7 +80,9 @@ export default function Settings() {
 
                 <div>
                   <div className="font-medium">English</div>
-                  <div className={`text-xs ${ui.sub}`}>English</div>
+                  <div className={`text-xs ${ui.sub}`}>
+                    English
+                  </div>
                 </div>
               </button>
             </div>
@@ -91,14 +97,15 @@ export default function Settings() {
 
               <p className={`mt-1 text-sm ${ui.sub}`}>
                 {lang === 'ar'
-                  ? 'اختر مظهر التطبيق.'
-                  : 'Choose the application appearance.'}
+                  ? 'إعدادات مظهر التطبيق.'
+                  : 'Application appearance settings.'}
               </p>
             </div>
 
             <button
               type="button"
               onClick={() => setDark(!dark)}
+              aria-pressed={dark}
               className={`flex w-full items-center gap-3 rounded-xl p-4 text-left transition ${ui.cardSolid} ${ui.hoverCard}`}
             >
               {dark ? <Moon size={20} /> : <Sun size={20} />}
@@ -115,9 +122,13 @@ export default function Settings() {
                 </div>
 
                 <div className={`mt-1 text-xs ${ui.sub}`}>
-                  {lang === 'ar'
-                    ? 'اضغط للتبديل بين الوضعين'
-                    : 'Click to switch between themes'}
+                  {dark
+                    ? lang === 'ar'
+                      ? 'المظهر الداكن مفعل حاليًا'
+                      : 'Dark theme is currently active'
+                    : lang === 'ar'
+                      ? 'المظهر الفاتح مفعل حاليًا'
+                      : 'Light theme is currently active'}
                 </div>
               </div>
 
@@ -126,7 +137,7 @@ export default function Settings() {
                   dark ? 'bg-white/10' : 'bg-slate-100'
                 }`}
               >
-                {dark ? <Moon size={17} /> : <Sun size={17} />}
+                {dark ? <Sun size={17} /> : <Moon size={17} />}
               </div>
             </button>
           </section>
@@ -151,7 +162,9 @@ export default function Settings() {
 
                 <div>
                   <div className="text-sm font-medium">
-                    {lang === 'ar' ? 'التخزين المحلي' : 'Local storage'}
+                    {lang === 'ar'
+                      ? 'التخزين المحلي'
+                      : 'Local storage'}
                   </div>
 
                   <p className={`mt-1 text-xs leading-5 ${ui.sub}`}>
@@ -163,6 +176,7 @@ export default function Settings() {
               </div>
             </div>
           </section>
+
         </div>
 
         <div className={`mt-6 text-xs ${ui.faint}`}>
@@ -172,3 +186,4 @@ export default function Settings() {
     </div>
   )
 }
+EOF
