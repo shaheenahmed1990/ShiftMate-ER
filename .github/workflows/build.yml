@@ -11,23 +11,23 @@ permissions:
 jobs:
   publish-tauri:
     name: Build ${{ matrix.platform }}
+
     strategy:
       fail-fast: false
+
       matrix:
         include:
           - platform: ubuntu-22.04
-            args: ""
           - platform: windows-latest
-            args: ""
 
     runs-on: ${{ matrix.platform }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -46,6 +46,31 @@ jobs:
             patchelf \
             xdg-utils
 
+      - name: Install current linuxdeploy
+        if: matrix.platform == 'ubuntu-22.04'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TOOLS_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/tauri"
+          mkdir -p "$TOOLS_DIR"
+
+          curl -L \
+            --fail \
+            --show-error \
+            --retry 5 \
+            --retry-connrefused \
+            -o "$TOOLS_DIR/linuxdeploy-x86_64.AppImage" \
+            "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+
+          chmod +x "$TOOLS_DIR/linuxdeploy-x86_64.AppImage"
+
+          "$TOOLS_DIR/linuxdeploy-x86_64.AppImage" \
+            --appimage-extract-and-run \
+            --version
+
+          echo "LINUXDEPLOY_EXCLUDED_LIBRARIES=libwayland-*.so*" >> "$GITHUB_ENV"
+
       - name: Install frontend dependencies
         run: npm ci
 
@@ -53,9 +78,11 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         with:
           tagName: v__VERSION__
           releaseName: "ShiftMate ER v__VERSION__"
+
           releaseBody: |
             ## ShiftMate ER v__VERSION__
 
@@ -69,6 +96,6 @@ jobs:
             ### Windows
             - NSIS installer (.exe)
             - MSI installer (.msi)
+
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
